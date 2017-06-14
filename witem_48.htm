@@ -1,0 +1,451 @@
+<script src="//rec.ezprice.com.tw/ext/rtmart/"></script>
+<script type="text/javascript">
+function doPrint() { 
+	var printPage = window.open("","printPage","");
+	printPage.document.body.innerHTML = document.getElementById('block').innerHTML;
+	printPage.print(); 
+}
+</script>
+<style type="text/css">
+	/* CSS Document */
+
+	.box_style01{ border:#d8d8d8 solid 1px; font-size:15px;}
+	.top_title01{ font:15px/37px Arial, Helvetica, sans-serif; color:#df0070; font-weight:bold; text-align:center; background-color:#ffe7f3;}
+	.box_style02 td{ line-height:100px; padding-left:20px;}
+	.border_style01{ border-bottom: 1px dotted #CCCCCC;}
+	
+	/*------------*/
+	
+	.top_title02{ font:15px/45px Arial, Helvetica, sans-serif; color:#df0070; font-weight:bold; text-align:center; background-color:#ffe7f3; border-top:#d8d8d8 solid 1px; border-bottom:#d8d8d8 solid 1px;}
+	.box_style03{ line-height:35px; padding-left:50px;}
+	.box_style04{ font-size:15px;}
+	.top_title03{ color:#EC4B53; font-weight:bold;}
+	.border_style02{ border-bottom:#eaeaea solid 1px;}
+</style>
+<div class="navigation">
+    <div class="siteMargin">
+        <ul style=" line-height:16px;">
+            <li class="home"><a href="index.php?action=index">{{$lang.root.member.INDEX_PAGE}}</a></li>
+            <li>&gt;</li>
+            <li class="thisLv" style="font-size:13px;">{{$lang.root.shopping_checkout[71]}}<!--訂購完成--></li>
+        </ul>
+    </div>
+</div>
+<div class="shoppingStep">
+    <div class="siteMargin">
+    <img src="{{$sys_arrPage.style_color_path}}images/shopping/img_shoppingCart_step4.jpg" />
+    </div>
+</div>
+<div class="successMsg">
+    <div class="siteMargin">
+        <img src="{{$sys_arrPage.style_color_path}}images/shopping/img_shoppingcart_auccess.gif" /><br>
+    </div>
+</div>
+
+
+<!--
+
+<table border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td><img src="images/hotbuy_imgs_2/cart_s1_2.gif" width="210" height="50" /></td>
+    <td><img src="images/hotbuy_imgs_2/cart_s2.gif" width="234" height="50" /></td>
+    <td><img src="images/hotbuy_imgs_2/cart_s3_2.gif" width="232" height="50" /></td>
+    <td><img src="images/hotbuy_imgs_2/cart_s4_1.gif" width="204" height="50" /></td>
+  </tr>
+</table>
+-->
+
+<!--
+
+<table width="860" border="0" align="center" cellpadding="0" cellspacing="0"  class="join_boxmargin">
+  <tr>
+    <td align="right"><table border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="116"><input name="btn_submit" value="" class="buy_btn07" onclick="javascript:window.location.href='{{$sys_arrWebsite.website_url}}';" /></td>
+        <td width="11"></td>
+        <td width="116"><input name="btn_submit" value="" class="buy_btn09" onClick="doPrint()" /></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+<br />
+<table border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td><img src="images/hotbuy_imgs_2/cart_s1_2.gif" width="210" height="50" /></td>
+    <td><img src="images/hotbuy_imgs_2/cart_s2.gif" width="234" height="50" /></td>
+    <td><img src="images/hotbuy_imgs_2/cart_s3_2.gif" width="232" height="50" /></td>
+    <td><img src="images/hotbuy_imgs_2/cart_s4_1.gif" width="204" height="50" /></td>
+  </tr>
+</table>
+
+
+-->
+
+
+
+<!-- 訂購完成-atm  -->
+	<div class="clear mainContainer">
+		<div class="successInfo">
+			{{if $sco_arrOrderMf.atm_account}}
+			<div class="infoTable">
+				<div class="head">{{$lang.root.shopping_checkout[73]}}<!--ATM轉帳--></div>
+				<table class="table_v1">
+					<tr>
+						<td>{{$lang.root.shopping_checkout[72]}}<!--付款方式--></td>
+						<td>ATM</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_checkout[74]}}<!--轉帳銀行--></td>
+						<td>{{$sco_arrOrderMf.bank_no}} {{$sco_arrOrderMf.bank_name}}</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_checkout[75]}}<!--轉帳帳號--></td>
+						<td>{{$sco_arrOrderMf.atm_account}} ({{$lang.root.shopping_checkout[76]}})<!--共16碼，僅提供本次交易使用--></td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_checkout[77]}}<!--轉帳金額--></td>
+						<td><span class="formatNumber">{{$sco_arrOrderMf.total_money_all}}</span>元</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_checkout[78]}}<!--繳款期限--></td>
+						<td>{{$sco_arrOrderMf.payment_deadline}}</td>
+					</tr>
+				</table>
+			</div>
+			{{/if}}
+			{{if $sco_arrPayForm}}
+			<div class="infoTable">
+				<div class="head">{{$lang.root.shopping_checkout[79]}}<!--Web ATM轉帳--></div>
+				<table class="table_v1">
+					<tr>
+						<td>{{$lang.root.shopping_checkout[72]}}<!--付款方式--></td>
+						<td>Web ATM</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_checkout[77]}}<!--轉帳金額--></td>
+						<td><span class="formatNumber">{{$sco_arrOrderMf.total_money_all}}</span>元</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_checkout[78]}}<!--繳款期限--></td>
+						<td>{{$sco_arrOrderMf.payment_deadline}}</td>
+					</tr>
+				</table>
+                <table class="table_v1">                   
+					<tr align="center">
+						<td>
+                            {{if $sco_arrPayForm.target != "_blank"}}
+                                <span style="color:#0066FF;">{{$sco_arrPayForm.iframeDesc}}</span><br>
+                                <iframe name="framePay" id="framePay" height="{{$sco_arrPayForm.iframeH}}" width="100%" Frameborder="0"></iframe>
+                                <form name="formPay" method="post" action="{{$sco_arrPayForm.postUrl}}" target="framePay">
+                                {{foreach key=key item=item from=$sco_arrPayForm.postData}}
+                                    <input type="hidden" name="{{$key}}" value="{{$item}}">
+                                {{/foreach}}
+                                    <input type="submit" name="btn_submit" style="display:none">
+                                </form>
+                                <script language="javascript">
+                                    window.onload=function(){ document.formPay.submit(); }
+                                </script>
+                            {{else}}
+                                <form name="formPay" method="post" action="{{$sco_arrPayForm.postUrl}}" target="framePay">
+                                <span style="color:#0066FF;">{{$sco_arrPayForm.iframeDesc}}</span>
+                                {{foreach key=key item=item from=$sco_arrPayForm.postData}}
+                                    <input type="hidden" name="{{$key}}" value="{{$item}}">
+                                {{/foreach}}
+                                    <input type="submit" name="btn_submit" value="　{{$sco_arrPayForm.submitValue}}　" onmouseover="javascript:ij_styleCursorHand(this);" class="webatm_btn">
+                                </form>
+                            {{/if}}
+                        </td>
+					</tr>
+				</table>
+			</div>
+			{{/if}}            
+			<div class="infoTable">
+				<div class="head">{{$lang.root.shopping_checkout[80]}}<!--購物明細--></div>
+				<table class="table_v2">
+					<thead>
+						<tr>
+							<td>{{$lang.root.order[0]}}<!--訂單編號--></td>
+							<td class="aliLeft">{{$lang.root.product[0]}}<!--商品名稱--></td>
+							<td class="w11p">{{$lang.root.product.Specification}}<!--規格--></td>
+							<td class="w11p">{{$lang.root.product.Single_Price}}<!--單價--></td>
+							<td class="w11p">{{$lang.root.product[11]}}<!--數量--></td>
+							<td class="w11p">{{$lang.root.product.Sum}}<!--小計--></td>
+						</tr>
+					</thead>
+					<tbody>
+					{{section name=sco_i loop=$sco_arrOrderMf.order_df_delivery}}
+                    
+					{{assign var="_arrOrderDf" value=$sco_arrOrderMf.order_df_delivery[sco_i]}}
+                    
+					{{math equation="x * y" x=$_arrOrderDf.order_df_price y=$_arrOrderDf.order_df_qty assign="sub_total1"}}
+                    
+                    {{if $_arrOrderDf.wmkt_type}}
+					{{elseif $_arrOrderDf.order_df_type == "0"}}
+						<tr>
+							<td>{{$_arrOrderDf.order_uid}}</td>
+							<td class="aliLeft">{{$_arrOrderDf.prod_name}}</td>
+							<td>{{$_arrOrderDf.prod_color_name}}/{{$_arrOrderDf.prod_size}}</td>
+							<td>{{$_arrOrderDf.order_df_price}}</td>
+							<td>{{$_arrOrderDf.order_df_qty}}</td>
+							<td>
+                            <span class="formatNumber">
+                            {{$sub_total1}}
+                            </span>
+                            </td>
+						</tr>
+					{{elseif $_arrOrderDf.order_df_type == "1"}}
+						<tr>
+							<td>{{$_arrOrderDf.order_uid}}</td>
+							<td class="aliLeft">({{$lang.root.shopping_cart[3]}}<!--贈品-->){{$_arrOrderDf.prod_name}}</td>
+							<td>{{$_arrOrderDf.prod_color_name}}/{{$_arrOrderDf.prod_size}}</td>
+							<td>-</td>
+							<td>{{$_arrOrderDf.order_df_qty}}</td>
+							<td>-</td>
+						</tr>
+					{{elseif $_arrOrderDf.order_df_type == "2"}}
+                    
+						<tr>
+							<td>{{$_arrOrderDf.order_uid}}</td>
+							<td class="aliLeft">({{$lang.root.shopping_cart[4]}}<!--加購-->){{$_arrOrderDf.prod_name}}</td>
+							<td>{{$_arrOrderDf.prod_color_name}}/{{$_arrOrderDf.prod_size}}</td>
+							<td>{{$_arrOrderDf.order_df_price}}</td>
+							<td>{{$_arrOrderDf.order_df_qty}}</td>
+							<td>
+                            <span class="formatNumber">
+                            {{$sub_total1}}
+                            </span>
+                            </td>
+						</tr>
+					{{else}}
+						<tr>
+							<td>{{$_arrOrderDf.order_uid}}</td>
+							<td class="aliLeft">{{$_arrOrderDf.prod_name}}</td>
+							<td>{{$_arrOrderDf.prod_color_name}}/{{$_arrOrderDf.prod_size}}</td>
+							<td>{{$_arrOrderDf.order_df_price}}</td>
+							<td>{{$_arrOrderDf.order_df_qty}}</td>
+							<td>
+                            <span class="formatNumber">
+                            {{$sub_total1}}
+                            </span>
+                            </td>
+						</tr>
+					{{/if}}
+					{{/section}}
+					</tbody>
+				</table>
+				
+				<!--全館滿額活動-->
+				{{if $MarketingProd}}
+				<p style="height: 15px;"></p>
+				<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="box_style04">
+					{{foreach key=key item=item from=$MarketingProd}}
+					<tr><td colspan="2" class="top_title02">{{$item.title}}</td></tr>
+					<tr>
+						<td class="top_title03 box_style03 border_style02">{{$lang.root.shopping_cart[14]}}<!--贈品名稱--></td>
+						<td width="120" align="center" class="top_title03 border_style02">{{$lang.root.shopping_cart[0]}}<!--數量--></td>
+					</tr>
+					{{section name=i loop=$item.prod}}
+					<tr>
+						<td class="box_style03 border_style02">{{$item.prod[i].prod_name}}</td>
+						<td align="center" class="box_style03 border_style02">{{$item.prod[i].count}}</td>
+					</tr>
+					{{/section}}
+					{{/foreach}}
+				</table>
+				{{/if}}
+				<!--全館滿額活動 END-->
+				
+				<div class="summary">
+					<div class="totalAmount">
+						<table>
+							{{if $Bonus_Used}}
+							<tr>
+							  <td>{{$lang.root.shopping_checkout[50]}}<!--本次消費抵用紅利--></td>
+							  <td>{{$Bonus_Used}}{{$lang.root.shopping_checkout[49]}}<!--點--></td>
+							</tr>
+							{{/if}}
+							{{section name=sco_i loop=$sco_arrOrderMf.Delivery}}
+							{{if $sco_arrOrderMf.Delivery[sco_i].delivery_carriage > 0}}
+							<tr>
+								<td>{{$lang.root.shopping_checkout.Delivery_Fee}}<!--運費--></td>
+								<td>NT$ {{$sco_arrOrderMf.Delivery[sco_i].delivery_carriage}}</td>
+							</tr>
+							{{/if}}
+							{{/section}}
+							<tr class="total">
+								<td>{{$lang.root.shopping_cart[18]}}</td>
+								<td>NT$ <span class="formatNumber">{{$sco_arrOrderMf.total_money_all}}</span></td>
+							</tr>
+							<!--	201705 滿額折抵 START	-->
+							{{if $sco_ActivityCheck.is_act == 1}}
+							<tr class="total">
+								<td>刷卡金額</td>
+								<td>NT$ <span class="formatNumber">{{$sco_ActivityCheck.scar_total}}</span></td>
+							</tr>
+							{{/if}}
+							<!--	201705 滿額折抵 END	-->
+						</table>
+					</div>
+                    <div class="clear"></div>
+				</div>
+			</div>
+			
+			<div class="infoTable">
+				<div class="head">{{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}{{$lang.root.shopping_cart[17]}}{{else}}{{$lang.root.shopping_cart[16]}}{{/if}}</div>
+				<table class="table_v1">
+					<tr>
+						<td>{{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}{{$lang.root.shopping_cart[17]}}{{else}}{{$lang.root.shopping_cart[16]}}{{/if}}</td>
+						<td>{{$sco_arrOrderMf.order_addressee|nameMask}}</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_cart[19]}}</td>
+						<td>{{$sco_arrOrderMf.order_telcellphone|telphoneMask}}</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_cart[20]}}</td>
+						<td>{{$sco_arrOrderMf.order_zip}} {{$sco_arrOrderMf.order_city}}{{$sco_arrOrderMf.order_address|addressMask}}</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_cart[21]}}</td>
+						<td>{{$sco_arrOrderMf.order_email|emailMask}}</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_cart[22]}}</td>
+                        {{if $sco_arrOrderMf.invoice_utcode != ''}}
+						<td>紙本發票</td>
+                        {{else}}
+                        <td>電子發票</td>
+                        {{/if}}
+					</tr>
+                    {{if $sco_arrOrderMf.invoice_utcode != ''}}
+					<tr>
+						<td>{{$lang.root.shopping_checkout[8]}}</td>
+						<td>{{$sco_arrOrderMf.invoice_utcode}}</td>
+					</tr>
+                    {{/if}}
+                    {{if $sco_arrOrderMf.invoice_title != ''}}
+					<tr>
+						<td>{{$lang.root.shopping_checkout[9]}}</td>
+						<td>{{$sco_arrOrderMf.invoice_title}}</td>
+					</tr>
+                    {{/if}}
+                    {{if $sco_arrOrderMf.invoice_addressee != ''}}
+					<tr>
+						<td>{{$lang.root.shopping_checkout[68]}}</td>
+						<td>{{$sco_arrOrderMf.invoice_addressee|nameMask}}</td>
+					</tr>
+                    {{/if}}                    
+                    {{if $sco_arrOrderMf.invoice_address != ''}}
+					<tr>
+						<td>{{$lang.root.shopping_checkout[69]}}</td>
+						<td>{{$sco_arrOrderMf.invoice_state}}{{$sco_arrOrderMf.invoice_city}}{{$sco_arrOrderMf.invoice_zip}}{{$sco_arrOrderMf.invoice_address|addressMask}}</td>
+					</tr>
+                    {{/if}}
+					{{if ($ActTime.Now >= $ActTime.Start) && ($ActTime.End >= $ActTime.Now) }}
+					
+					<tr>
+						
+						<td>活動贈品資格</td>
+						<td>{{if $sco_arrOrderMf.order_service_remarks>0}}恭喜您獲得活動贈品
+						{{elseif $sco_arrOrderMf.order_service_remarks == '-1'}}未符合活動資格
+						{{else}}本次活動贈品已送完，請密切注意最新活動公告
+						{{/if}}
+						</td>
+						
+					</tr>
+					
+					{{/if}}
+					
+				</table>
+			</div>
+			
+			<div class="infoTable">
+				<div class="head">{{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}{{$lang.root.shopping_checkout[54]}}{{else}}{{$lang.root.shopping_checkout[2]}}{{/if}}</div>
+				<table class="table_v1">
+					<tr>
+						<td>{{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}{{$lang.root.shopping_checkout[54]}}{{else}}{{$lang.root.shopping_checkout[3]}}{{/if}}</td>
+						<td>{{$sco_arrOrderMf.Delivery.0.order_addressee|nameMask}}</td>
+					</tr>
+					<tr>
+						<td>{{$lang.root.shopping_cart[19]}}</td>
+						<td>{{$sco_arrOrderMf.Delivery.0.order_telcellphone|telphoneMask}}</td>
+					</tr>
+                    {{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}
+					<tr>
+						<td>{{$lang.root.shopping_cart[25]}}</td>
+						<td>
+						{{$lang.root.shopping_checkout[20]}}︰<span class="form_gloss">{{$sys_arrWebsite.web_store_name}}</span><br>
+						{{$lang.root.shopping_checkout.PICKUP_ADDRESS}}︰<span class="form_gloss">{{$sys_arrWebsite.web_store_add}}</span><br>
+						{{$lang.root.shopping_checkout.PICKUP_TELEPHONE}}︰<span class="form_gloss">{{$sys_arrWebsite.web_store_tel}}</span><br>                        
+                        </td>
+					</tr>
+                    {{else}}
+					<tr>
+						<td>{{$lang.root.shopping_checkout[26]}}</td>
+						{{if $sco_arrOrderMf.Delivery.0.store_name != ''}}
+						<td>7-ELEVEn {{$sco_arrOrderMf.Delivery.0.store_name}}【{{$sco_arrOrderMf.Delivery.0.store_address|addressMask}}】</td>
+						{{else}}
+						<td>{{$sco_arrOrderMf.Delivery.0.order_zip}} {{$sco_arrOrderMf.Delivery.0.order_city}}{{$sco_arrOrderMf.Delivery.0.order_address|addressMask}}</td>
+						{{/if}}
+					</tr>
+                    {{/if}}
+					<tr>
+						<td>{{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}{{$lang.root.shopping_cart[27]}}{{else}}{{$lang.root.shopping_cart[28]}}{{/if}}</td>
+						<td>
+                        {{if $sco_arrOrderMf.order_specify_arrival_date == '1'}}
+                        當日配15時-20時
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '2'}}
+                        明日早9-12時
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '3'}}
+                        明日午12-17時
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '4'}}
+                        明日晚(17-20時)
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '5'}}
+                        明日配(15-20時)
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '6'}}
+                        後日早(9-12時)
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '7'}}
+                        後日早 (9-12時)
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '8'}}
+                        後日午 (12-17時)
+                        {{elseif $sco_arrOrderMf.order_specify_arrival_date == '9'}}
+                        後日晚 (17-20時)
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '10'}}
+						偏遠地區約3-5天送達
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '11'}}
+						明日不指定時段
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '12'}}
+                        後日不指定時段
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '16'}}
+                        當日晚間(16-20時)
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '411'}}
+                        三日後不指定時段
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '511'}}
+                        四日後不指定時段
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '611'}}
+                        五日後不指定時段
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '711'}}
+                        六日後不指定時段
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '811'}}
+                        七日後不指定時段
+						{{elseif $sco_arrOrderMf.order_specify_arrival_date == '911'}}
+                        八日後不指定時段
+                        {{/if}}
+                        </td>
+					</tr>                    
+				</table>
+			</div>
+			
+			<div class="btnArea clearFix">
+				<div class="btn_print fR"><A HREF="javascript:window.print()"></a></div>
+			</div>
+		</div>
+	</div>
+
+<!-- 訂購完成-atm  -->
+
+
+
+
+
+

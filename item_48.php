@@ -4,7 +4,7 @@
 * item_48 購物車結帳 - 完成購物
 *
 * $_SESSION[$sys_arrWebsite['scar_no_cookie_name']] 		送結帳的購物車編號
-* 
+*
 ****************************************/
 include_once( ROOT_PATH.'include/inc_shopping_checkout.php' );
 include('sql.php');
@@ -20,6 +20,21 @@ $WebsiteMarketing = new WebsiteMarketing($web_lang);
 $_arrSCO['scar_no'] = $_SESSION[$sys_arrWebsite['scar_no_cookie_name']];
 //依搜尋條件 取得購物車內容
 $_arrSCO['m_arrShoppingCart'] = $ShoppingCart->s_shopping_cartBySearch($_arrSCO['scar_no'], "", "", "", "", 1);
+
+/**
+* *******************************************
+*       2017滿額折抵活動
+* *******************************************
+**/
+$ShoppingCart = new ShoppingCart ( $web_lang ); // 購物車
+$ActInfo = $ShoppingCart->ScarNoActTotalTest($order_uid1[$i],2);
+$root_smarty->assign('ActInfo',$ActInfo);
+/**
+* *******************************************
+*       2017滿額折抵活動
+* *******************************************
+**/
+
 /**
 *		Alex Time
 */
@@ -33,38 +48,38 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 	//依訂單編號 取得訂單所有資料
 	$_arrSCO['m_arrOrderMf'] = $OrderMf->s_orderMfAllByOuid($_POST['sco_order_uid']);
 	$_arrSCO['m_arrOrderMf']["order_df_delivery"] = $OrderDf->s_order_dfByOuid($_POST['sco_order_uid']);
-	
+
 	/*全館滿額活動*/
 	$MarketingProd = array();
 	foreach($_arrSCO ['m_arrOrderMf']["order_df_delivery"] as $key => $val){
 		if($val['wmkt_uid'] == 0) continue;
 		$sql = "SELECT *
-				FROM website_marketing 
+				FROM website_marketing
 				WHERE wmkt_type = '31'
 				AND wmkt_uid = '{$val['wmkt_uid']}'";
 		$rs = $WebsiteMarketing->dbExecute($sql);
 		$result = $rs->GetRows();
 		if($result){
-			$MarketingProd[$result[0]['wmkt_uid']]['title'] = $result[0]['wmkt_title'];				
+			$MarketingProd[$result[0]['wmkt_uid']]['title'] = $result[0]['wmkt_title'];
 			$MarketingProd[$result[0]['wmkt_uid']]['prod'][] = array(
 				'prod_name'	=>	$val['prod_name'],
 				'count'		=>	$val['order_df_qty'],
 			);
 			$_arrSCO ['m_arrOrderMf']["order_df_delivery"][$key]['wmkt_type'] = '31';
-		}		
+		}
 	}
 	$root_smarty->assign('MarketingProd', $MarketingProd); //取得購物車內容
 	/*全館滿額活動 END*/
-	
+
 	if($_arrSCO['m_arrOrderMf']) {
 		$root_smarty->assign('sco_arrOrderMf', $_arrSCO['m_arrOrderMf']); //訂單資料
-		$_arrParams ['Bonus_Used'] = $_POST['order_use_bonus'];	
+		$_arrParams ['Bonus_Used'] = $_POST['order_use_bonus'];
 		if($_arrParams ['Bonus_Used'])
 			$root_smarty->assign('Bonus_Used', $_arrParams ['Bonus_Used']); //紅利抵扣資料
 	//echo '<pre>';print_r($_arrSCO ['m_arrOrderMf']);exit;
 		// 推薦商品TOP5
 		// $m_arrRecommendProduct = $Product->s_recommendProductsTop5();
-		
+
 		// $_arrParam = array();
 		// foreach($m_arrRecommendProduct as $_key => $_val){
 			// if(strlen($_val['prod_no']) > 0){
@@ -72,29 +87,29 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 				// $_arrParam[] = $Product->s_productAllByPno($_val['prod_no']);
 			// }
 		// }
-		
+
 		/*全館滿額活動*/
 		$MarketingProd = array();
 		foreach($_arrSCO ['m_arrOrderMf']["order_df_delivery"] as $key => $val){
 			if($val['wmkt_uid'] == 0) continue;
 			$sql = "SELECT *
-					FROM website_marketing 
+					FROM website_marketing
 					WHERE wmkt_type = '31'
 					AND wmkt_uid = '{$val['wmkt_uid']}'";
 			$rs = $WebsiteMarketing->dbExecute($sql);
 			$result = $rs->GetRows();
 			if($result){
-				$MarketingProd[$result[0]['wmkt_uid']]['title'] = $result[0]['wmkt_title'];				
+				$MarketingProd[$result[0]['wmkt_uid']]['title'] = $result[0]['wmkt_title'];
 				$MarketingProd[$result[0]['wmkt_uid']]['prod'][] = array(
 					'prod_name'	=>	$val['prod_name'],
 					'count'		=>	$val['order_df_qty'],
 				);
 				$_arrSCO ['m_arrOrderMf']["order_df_delivery"][$key]['wmkt_type'] = '31';
-			}		
+			}
 		}
 		$root_smarty->assign('MarketingProd', $MarketingProd); //取得購物車內容
 		/*全館滿額活動 END*/
-		
+
 		/*20140506*/
 		$order_telcellphone = $_arrSCO['m_arrOrderMf']['Delivery'][0]['order_telcellphone'];
 		$_arrSCO['m_arrOrderMf']['Delivery'][0]['order_telcellphone'] = substr_replace($order_telcellphone, '***', 4, 3);
@@ -130,7 +145,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			$mail_name = 'order.confirm.xml';
 		}
 		/*20140506 end*/
-		
+
 		/*** 發送訂單確認信函 ***/
 		$Mailer2 = new Mailer2();
 		$mailXML = ROOT_PATH.'language/'.$web_lang.'/'."mail/$mail_name";
@@ -141,7 +156,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 
 		try {
 			$_arrMail 				= $Mailer2->analyzeEmail($mailXML, $_arrParams);
-			
+
 			$_arrMail['from_name']	= $sys_arrWebsite['web_name'];
 			$_arrMail['from_mail']	= $sys_arrWebsite['web_service_mail'];
 			$_arrMail['to_mail']	= $_arrSCO['m_arrOrderMf']['order_email'];
@@ -158,9 +173,9 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			$SysLogs->saveLogs ($log_f, $log_msg, 0);
 		}
 		/*** 發送訂單確認信函 END ***/
-		
+
 		/***訂單確認通知簡訊********
-		
+
 		$ch		= curl_init();
 		$url		= "{$sys_arrWebsite['web_domainname']}/{$sys_arrWebsite['web_byeurl']}/background/bg.mobile_letter.php";
 		$post	= array(
@@ -170,13 +185,13 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 		);
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, true); // 啟用POST
-		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post)); 
-		curl_exec($ch); 
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
+		curl_exec($ch);
 		curl_close($ch);
-		
-		
+
+
 		/***訂單確認通知簡訊END***/
-		
+
 		/*** Google Analytics ***/
 		if( $_SESSION['google_order_uid'] != $_arrSCO['m_arrOrderMf']['order_uid'] ){
 			$GoogleAnalytics = new GoogleAnalytics( $sys_arrWebExtend['web_extension_1']['_uacct'] );
@@ -200,7 +215,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 		 //setcookie("order_df_price", $_arrSCO['m_arrOrderMf']["order_df_delivery"]['0']['order_df_price'], time()+600, "/", $m_arrSystem['cookie_domain'] );
          //存入商品貨號
 		 //setcookie("prod_no_old", $_arrSCO['m_arrOrderMf']["order_df_delivery"]['0']['prod_no_old'], time()+600, "/", $m_arrSystem['cookie_domain'] );
-         
+
          //將陣列寫入cookie測試
          /*$count = count($_arrSCO['m_arrOrderMf']["order_df_delivery"]);
          for($i = 0; $i<$count;$i++)
@@ -210,18 +225,18 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 	          $prod_name[$i] = $_arrSCO['m_arrOrderMf']["order_df_delivery"][$i]['prod_name'];
 	          $quantity[$i] = $_arrSCO['m_arrOrderMf']["order_df_delivery"][$i]['order_df_qty'];
          }
-		 setcookie("prod_no_old",json_encode($id),time()+600,"/",$m_arrSystem['cookie_domain']);	
+		 setcookie("prod_no_old",json_encode($id),time()+600,"/",$m_arrSystem['cookie_domain']);
          setcookie("price",json_encode($price),time()+600,"/",$m_arrSystem['cookie_domain']);
          setcookie("name",json_encode($prod_name),time()+600,"/",$m_arrSystem['cookie_domain']);
          setcookie("quantity",json_encode($quantity),time()+600,"/",$m_arrSystem['cookie_domain']);
          /*foreach($prod_name as $name => $value){
-		 		setcookie($name,$value,time()+600,"/",$m_arrSystem['cookie_domain']);		 	    
+		 		setcookie($name,$value,time()+600,"/",$m_arrSystem['cookie_domain']);
          }*/
-    
-         
+
+
 
 		/* GTM Cookie END */
-		
+
 		/*** 結帳付款資料 SESSION ***/
 		if( $_SESSION[$shopping_checkout_pay_session_name] ){
 			$sco_arrPayForm = json_decode($_SESSION[$shopping_checkout_pay_session_name], true);
@@ -234,10 +249,10 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 	}
 /*** 已完成訂單 END ************************************************************/
 // } else if ($sco_arrForm['payment_type'] && $sco_arrForm['delivery_type'])
-} else { 
+} else {
 	//依購物車編號 取得總價 + 運費 - 紅利
 	$sco_arrForm['scarPriceTotal'] = $ShoppingCart->getScarPriceTotalByScno($_arrSCO['scar_no']) + $sco_arrForm['order_carriage'] - $sco_arrForm['order_use_bonus'];
-	
+
 	/*** 付款方式處理 ***/
 	switch( $sco_arrForm['payment_type'] ){
 		case "100": //100 : 線上刷卡
@@ -259,13 +274,13 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			}else{
 				$sco_arrForm['ssl_payment_form'] = $m_arrSystem['jsonSSLPaymentForm']['installment'];
 			}
-			
-			if( $sco_arrForm['ssl_payment_form'] == "twNccc" || 
+
+			if( $sco_arrForm['ssl_payment_form'] == "twNccc" ||
 				$sco_arrForm['ssl_payment_form'] == "twNewebmPP" ||
 				$sco_arrForm['ssl_payment_form'] == "twHiTRUST" ||
 						$sco_arrForm['ssl_payment_form'] == "Taishin" ){
 				//twNccc : 聯合刷卡, twNewebmPP : 藍新刷卡(mPP), twHiTRUST : 網際威信
-				
+
 				if( $_POST['execstate'] == 1 ){
 					$sco_arrForm['credit_card_no'] 			= $_POST['credit_card_no']; 		//信用卡卡號
 					$sco_arrForm['ssl_approval_code'] 		= $_POST['ssl_approval_code']; 		//交易授權碼
@@ -273,8 +288,8 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 					$sco_arrForm['payment_case_no'] 		= $_POST['payment_case_no']; 		//付款對應接單號
 					$sco_arrForm['credit_pay_time'] 		= $_POST['credit_pay_time']; 		//分期期數
 					$sco_arrForm['payment_pct'] 			= $_POST['payment_pct']; 			//手續費率 %
-					
-					if( $sco_arrForm['payment_pct'] > 0 ) 
+
+					if( $sco_arrForm['payment_pct'] > 0 )
 						$sco_arrForm['ssl_fees_charge'] = m_floor( $sco_arrForm['scarPriceTotal'] * $sco_arrForm['payment_pct'] / 100, $m_arrSystem['money_decimal'] ); //分期付款手續費
 				}
 				else {
@@ -283,12 +298,12 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			}
 			elseif( $sco_arrForm['ssl_payment_form'] == "twNeweb" || $sco_arrForm['ssl_payment_form'] == "twNewebInstallment"){
 				//藍新刷卡或分期
-				
+
 				$sco_arrForm['credit_card_no'] = $sco_arrForm['credit_card_no_1'].$sco_arrForm['credit_card_no_2'].$sco_arrForm['credit_card_no_3'].$sco_arrForm['credit_card_no_4']; //信用卡卡號
 				$sco_arrForm['credit_expire'] = $sco_arrForm['credit_expire_y'].$sco_arrForm['credit_expire_m']; //信用卡有效日期 yyyymm
-				
+
 				$SSLPayment = new SSLPaymentNeweb($sco_arrForm['payment_type']); //藍星線上刷卡
-					
+
 				if( $sco_arrForm['payment_pct'] > 0 ){
 					//分期付款手續費
 					$sco_arrForm['ssl_fees_charge'] = m_floor( $sco_arrForm['scarPriceTotal'] * $sco_arrForm['payment_pct'] / 100, $m_arrSystem['money_decimal'] );
@@ -302,15 +317,15 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 				if (!$sco_arrForm['payment_case_no']) {
 					$sco_arrForm['payment_case_no'] = $SerialNumber->get_serial_number('neweb_pay_orderno'); //藍星刷卡訂單編號
 				}
-				
-				
+
+
 				if (in_array($sco_arrForm['credit_type'], array("MASTER", "VISA")) && !isset($_SESSION['MPIReceive']) && $m_arrSystem['jsonNewebMPI'])
 				{
 					// MASTER 和 VISA 的信用卡要進行 3D 認證
 				    $_sessionid = session_id();
 					$_MPIvars = $m_arrSystem['jsonNewebMPI'];
 				    $_XID = str_pad($_MPIvars['MerchantNumber'], 10, "0", STR_PAD_LEFT) . str_pad($sco_arrForm['payment_case_no'], 10, "0", STR_PAD_LEFT);
-				    
+
 					$_SESSION[$shopping_checkout_json_session_name] = json_encode($sco_arrForm);
 				    ?>
 					<html>
@@ -332,7 +347,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 						document.MPIform.submit();
 					//]]>
 					</script>
-					
+
 					</body>
 					</html>
 					<?php
@@ -353,14 +368,14 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 					$_arrSSLPay['MPIReceive']		= json_decode($_SESSION['MPIReceive'], true); // ECI 回傳
 
 					//$SSLPayment->debug = true;
-					
-					$_arrSSLReturn = $SSLPayment->acceptPayment(	$_arrSSLPay['OrderNumber'], $_arrSSLPay['OrgOrderNumber'], $_arrSSLPay['Amount'], 
-																	$_arrSSLPay['CardType'], $_arrSSLPay['CardNumber'], $_arrSSLPay['CardExpiry'], 
+
+					$_arrSSLReturn = $SSLPayment->acceptPayment(	$_arrSSLPay['OrderNumber'], $_arrSSLPay['OrgOrderNumber'], $_arrSSLPay['Amount'],
+																	$_arrSSLPay['CardType'], $_arrSSLPay['CardNumber'], $_arrSSLPay['CardExpiry'],
 																	$_arrSSLPay['CVC2'], $_arrSSLPay['OrderURL'], $_arrSSLPay['Period'],
 																	$_arrSSLPay['ID'], $_arrSSLPay['MPIReceive']);
-					
+
 				}
-				
+
 				if( !$_arrSSLReturn['execState'] ) {
 					unset ($_SESSION['MPIReceive']); //清除ECI回應
 
@@ -371,20 +386,20 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 				else {
 					$sco_arrForm['ssl_approval_code'] 	= $_arrSSLReturn['ApprovalCode']; 		//交易授權碼
 					$sco_arrForm['payment_business_no'] = $_arrSSLReturn['MerchantNumber']; 	//付款企業代碼
-					
+
 					//$sco_arrForm['credit_card_no'] 		= $sco_arrForm['credit_card_no_1']."xxxx".$sco_arrForm['credit_card_no_3']."xxxx"; //信用卡卡號
 					$sco_arrForm['credit_card_no'] 		= "xxxxxxxxxxxxxxxx";					//信用卡卡號
 					$sco_arrForm['credit_cd2no'] 		= "xxx"; 								//信用卡背面末三碼(3 碼數字)
 					$sco_arrForm['credit_expire'] 		= "xxxxxx"; 							//信用卡有效日期
 					$sco_arrForm['credit_type'] 		= "xxxx"; 								//信用卡卡別
 				}
-				
-				
+
+
 			}
 			else {
 				exit("sslPaymentForm Error");
 			}
-			
+
 			$sco_arrForm['payment_web_uid'] = 0; //金流網站編號
 			break;
 		case "400": // 貨到付款
@@ -409,7 +424,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			$sco_arrForm['ssl_fees_charge'] = 0; //分期付款手續費
 			$sco_arrForm['payment_web_uid'] = $m_arrSystem['jsonHilifeService']['logistics_web_uid']; //金流網站編號 (萊爾富)
 			break;
-		case "501": 
+		case "501":
 			// Stevenson Kuo 9/28 校正 ibon 付款可能出現信用卡刷卡的情況
 			$sco_arrForm['ssl_payment_form']	= "";	// 藍星還是聯信什麼等等的
 			$sco_arrForm['credit_type']			= ""; 			//信用卡卡別，可用參數值 (VISA、MAST、JCB、UCARD)
@@ -424,7 +439,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			break;
 		case "601":
 			if( $_POST['execstate'] != 1 ){
-				
+
 				$SysMessage->replyActionMessages('', $_POST['execmsg'], 'index.php?action=shopping_checkout_2');
 			} else {
 				// @TODO 訂單成立需要變數
@@ -438,7 +453,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			break;
 	}
 	/*** 付款方式處理 END ***/
-	
+
 	if( $sco_arrForm['delivery_is_cod'] ){
 		//帳款確認 (取貨付款)
 		$sco_arrForm['order_status'] = 11; //訂單狀態
@@ -450,23 +465,23 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 		$sco_arrForm['delivery_status'] = 0; //出貨單狀態
 		$sco_arrForm['order_df_status'] = 0; //訂單明細檔狀態
 	}
-	
+
 	$sco_arrForm['invoice_get_type'] = $sys_arrWebsite['web_inv_get_type']; //發票開立方式
-	
+
 	//物流網站編號
 	if( $sys_arrWebsite['web_logistics'] ){ //物流中心出貨
 		$sco_arrForm['logistics_web_uid'] = 0;
 	}else{
 		$sco_arrForm['logistics_web_uid'] = $sys_arrWebsite['web_uid'];
 	}
-	
+
 	//物流網站編號 (萊爾富)
 	if( $sco_arrForm['delivery_type'] == "500" || $sco_arrForm['delivery_type'] == "501" ){
 		$sco_arrForm['logistics_web_uid'] = $m_arrSystem['jsonHilifeService']['logistics_web_uid'];
 		$sco_arrForm['invoice_get_type'] = 2;
 		$sco_arrForm['invoice_donation'] = 0;
 	}
-	
+
 	/*** 拆出貨單 ***/
 	// 直接先插入運費 5/20 Stevenson Kuo
 	$_arrSCO['m_arrSCartAll'] = array();
@@ -484,21 +499,21 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 												'delivery_carriage' => $_delivery_carriage);
 	}
 	/* 先插入運費 end */
-	
+
 	foreach($_arrSCO['m_arrShoppingCart'] as $key=>$_arrShoppingCart)
 	{
 		//運送方式
 		$_delivery_type = ($_arrShoppingCart['prod_type'] == 9) ? "900" : $sco_arrForm['delivery_type'];
 		//物流網站編號
-		
+
 		//arr_dump($sco_arrForm);
-		
+
 		$_logistics_web_uid = $sco_arrForm['logistics_web_uid'];
 		if( $_delivery_type == "100" || $_delivery_type == "101"
 				|| $_delivery_type == "200" || $_delivery_type == "201"
-				|| $_delivery_type == "302" || $_delivery_type == "900" ) 
+				|| $_delivery_type == "302" || $_delivery_type == "900" )
 		{
-			
+
 
 			if ( $_arrShoppingCart['websup_web_uid'] == "0")
 			{
@@ -509,7 +524,7 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 				$_arrLogisticsWebsite = $Website->s_websiteByUid($_arrShoppingCart['websup_web_uid']);
 				$_logistics_web_uid = ( $_arrLogisticsWebsite[0]['web_logistics'] == 1 ) ? $sco_arrForm['logistics_web_uid'] : $_arrShoppingCart['websup_web_uid'];
 			}
-			
+
 
 			//arr_dump($_arrShoppingCart);0
 		}
@@ -521,25 +536,25 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			$sco_arrForm['order_carriage'] -= $_delivery_carriage;
 		}
 		*/
-		
+
 		$_key = $_delivery_type."_".$_logistics_web_uid;
-		
+
 		if( $_delivery_type == "900" && $_arrShoppingCart['prod_type'] == 9 )
-		{ //虛擬票卷			
+		{ //虛擬票卷
 			//計算抵扣紅利
 			$_offset_bonus_s = $_arrShoppingCart['scar_offset_bonus']; //剩下可抵扣紅利
 			$_offset_bonus_one = m_ceil( $_arrShoppingCart['scar_offset_bonus']/$_arrShoppingCart['scar_count'], $m_arrSystem['money_decimal'] );
-			
+
 			for( $i=0; $i<$_arrShoppingCart['scar_count']; $i++ )
 			{
 				$d_key = $_delivery_type."_".$_logistics_web_uid."_".$key."_".$i;
-				
+
 				$_arrShoppingCartOne = $_arrShoppingCart;
 				$_arrShoppingCartOne['scar_count'] = 1;
 				//抵扣紅利
 				$_arrShoppingCartOne['scar_offset_bonus'] = ( $_offset_bonus_s > $_offset_bonus_one ) ? $_offset_bonus_one : $_offset_bonus_s;
 				$_offset_bonus_s -= $_arrShoppingCartOne['scar_offset_bonus'];
-				
+
 				$_arrSCO['m_arrSCartAll'][$d_key]['delivery_type'] = $_delivery_type;
 				$_arrSCO['m_arrSCartAll'][$d_key]['logistics_web_uid'] = $_logistics_web_uid;
 				if( $_delivery_carriage ) $_arrSCO['m_arrSCartAll'][$d_key]['delivery_carriage'] = $_delivery_carriage;
@@ -558,10 +573,10 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 		else {
 			$d_key = $_delivery_type."_".$_logistics_web_uid."_0_0";
 
-			
+
 			$_arrSCO['m_arrSCartAll'][$d_key]['delivery_type'] = $_delivery_type;
 			$_arrSCO['m_arrSCartAll'][$d_key]['logistics_web_uid'] = $_logistics_web_uid;
-			
+
 			if( $_delivery_carriage ) $_arrSCO['m_arrSCartAll'][$d_key]['delivery_carriage'] = $_delivery_carriage;
 			$_arrSCO['m_arrSCartAll'][$d_key]['OL'][$key] = $_arrShoppingCart;
 			/*
@@ -577,30 +592,30 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 	}
 	/*** 拆出貨單 END ***/
 	//arr_dump($_arrSCO['m_arrSCartAll']); exit();
-	
-	//arr_dump($sco_arrForm); 
+
+	//arr_dump($sco_arrForm);
 	//arr_dump($_arrSCO); exit();
-	
+
 	if( $sco_arrForm['order_remarks'] == "(如需指定收件時間或其他收件注意事項，請填寫於此；恕不接受以備註欄修改訂單內容或數量)")
 	{
 		$sco_arrForm['order_remarks'] = "";
 	}
-	
+
 	//$sco_arrForm['order_remarks'] = '消費者備註:' . $sco_arrForm['order_remarks'] . ',' .
 	//								'取貨人性別:' . $sco_arrForm['order_remarks_gender'] . ',' .
 	//	'會員卡編號:' . $sco_arrForm ['order_remarks_enterprise'];
-	
+
     //到店取貨記錄取貨人性別
     if( $sco_arrForm['order_remarks_gender'] != "")
 	{
-	$sco_arrForm['order_remarks'] = $sco_arrForm['order_remarks'] . '取貨人性別:' . $sco_arrForm['order_remarks_gender'] . ',' ; 
+	$sco_arrForm['order_remarks'] = $sco_arrForm['order_remarks'] . '取貨人性別:' . $sco_arrForm['order_remarks_gender'] . ',' ;
 	}
     //會員卡號備註
 	if( $sco_arrForm['order_remarks_enterprise'] != "")
 	{
 	$sco_arrForm['order_remarks'] = $sco_arrForm['order_remarks'] . '會員卡編號:' . $sco_arrForm ['order_remarks_enterprise'];
 	}
-    //Jessie	
+    //Jessie
 	if( $sco_arrForm['YFDATE'] != "" && $sco_arrForm['YFTIME'] != ""){
 		/*	20161228 生 鮮 預 購 館 START	*/
 		if($sys_arrWebsite['web_uid'] == 1599)
@@ -639,9 +654,9 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 	{
 	$sco_arrForm['order_remarks'] = $sco_arrForm['order_remarks'] . '大家電資料:' . $sco_arrForm['order_remarks_oldmachine'].','. $sco_arrForm['order_remarks_secondfloor']. ','. $sco_arrForm['order_remarks_elevator'];
 	}
-    
+
     //判斷訂單主檔備註欄有沒有被寫東西進去
-	if( $sco_arrForm['order_remarks'] != "") 
+	if( $sco_arrForm['order_remarks'] != "")
 	{
 		if($sys_arrWebsite['web_uid'] != 1603)
 			$sco_arrForm['order_remarks'] = '消費者備註:' . $sco_arrForm['order_remarks'];
@@ -652,21 +667,21 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 
 	//arr_dump($sco_arrForm); exit();
 	//新增訂單
-	$sco_arrForm['order_uid'] = $OrderMf->i_order_mf($sys_arrWebsite['web_uid'], $sys_arrMember['mem_uid'], $sco_arrForm['buyer_order_addressee'], 
-													$sco_arrForm['order_email'], $sco_arrForm['order_tel'], $sco_arrForm['buyer_order_telcellphone'], 
-													$sco_arrForm['cou_code_num'], $sco_arrForm['order_state'], $sco_arrForm['buyer_order_city'], 
-													$sco_arrForm['buyer_order_zip'], $sco_arrForm['buyer_order_address'], $sco_arrForm['payment_type'], 
-													$sco_arrForm['payment_case_no'], $sco_arrForm['bank_no'], $sco_arrForm['bank_name'], 
-													$sco_arrForm['atm_account'], $sco_arrForm['credit_name'], $sco_arrForm['credit_idcard'], 
-													$sco_arrForm['credit_birthday'], $sco_arrForm['credit_card_no'], $sco_arrForm['credit_cd2no'], 
-													$sco_arrForm['credit_expire'], $sco_arrForm['credit_pay_time'], $sco_arrForm['ssl_fees_charge'], 
-													$sco_arrForm['credit_type'], $sco_arrForm['invoice_type'], $sco_arrForm['invoice_title'], 
-													$sco_arrForm['invoice_utcode'], $sco_arrForm['invoice_state'], $sco_arrForm['invoice_city'], 
+	$sco_arrForm['order_uid'] = $OrderMf->i_order_mf($sys_arrWebsite['web_uid'], $sys_arrMember['mem_uid'], $sco_arrForm['buyer_order_addressee'],
+													$sco_arrForm['order_email'], $sco_arrForm['order_tel'], $sco_arrForm['buyer_order_telcellphone'],
+													$sco_arrForm['cou_code_num'], $sco_arrForm['order_state'], $sco_arrForm['buyer_order_city'],
+													$sco_arrForm['buyer_order_zip'], $sco_arrForm['buyer_order_address'], $sco_arrForm['payment_type'],
+													$sco_arrForm['payment_case_no'], $sco_arrForm['bank_no'], $sco_arrForm['bank_name'],
+													$sco_arrForm['atm_account'], $sco_arrForm['credit_name'], $sco_arrForm['credit_idcard'],
+													$sco_arrForm['credit_birthday'], $sco_arrForm['credit_card_no'], $sco_arrForm['credit_cd2no'],
+													$sco_arrForm['credit_expire'], $sco_arrForm['credit_pay_time'], $sco_arrForm['ssl_fees_charge'],
+													$sco_arrForm['credit_type'], $sco_arrForm['invoice_type'], $sco_arrForm['invoice_title'],
+													$sco_arrForm['invoice_utcode'], $sco_arrForm['invoice_state'], $sco_arrForm['invoice_city'],
 													$sco_arrForm['invoice_zip'], $sco_arrForm['invoice_address'], $sco_arrForm['invoice_addressee'], $sco_arrForm['invoice_electronic_device_code'],
 													$sco_arrForm['invoice_donatee'], $sco_arrForm['order_status'], $sco_arrForm['order_remarks'],
 													$sco_arrForm['payment_business_no'], $sys_rbye, $sco_arrForm['ssl_approval_code'],
 													$sco_arrForm['ssl_payment_form'], $sco_arrForm['pick_date']);
-	
+
 	if( $sco_arrForm['order_uid'] ){
 		foreach($_arrSCO['m_arrSCartAll'] as $d_key=>$_arrDM){
 			/*** 其他備用參數 ***/
@@ -675,21 +690,21 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			if( $sco_arrForm['webpay_uid'] ) $_arrODTempvar['webpay_uid'] = $sco_arrForm['webpay_uid'];
 			$_arrODTempvar['delivery_carriage'] = ($_arrDM['delivery_carriage']) ? $_arrDM['delivery_carriage'] : 0;
 			$_delivery_tempvar = ( $_arrODTempvar ) ? json_encode($_arrODTempvar) : "";
-			
-			// FIXME 付款方式 401 7-11 超商取貨對應付款方式是在這裡寫死指定的		
-			// FIXME 這樣的話其實 delivery_tempvar 裡的值會不準	
+
+			// FIXME 付款方式 401 7-11 超商取貨對應付款方式是在這裡寫死指定的
+			// FIXME 這樣的話其實 delivery_tempvar 裡的值會不準
 			$_arrDM['delivery_type'] = ($sco_arrForm['payment_type'] == 402) ? 401 : $_arrDM['delivery_type'];
 			$_arrDM['delivery_type'] = ($sco_arrForm['payment_type'] == 400) ? 101 : $_arrDM['delivery_type'];
 			/*** 其他備用參數 ***/
-			
+
 			//新增出貨單主檔
-			$sco_arrForm['delivery_uid'] = $OrderDelivery->i_order_delivery($sco_arrForm['order_uid'], $_arrDM['logistics_web_uid'], $_arrDM['delivery_type'], 
-																			$sco_arrForm['delivery_case_no'], $sco_arrForm['order_addressee'], $sco_arrForm['order_tel'], 
-																			$sco_arrForm['order_telcellphone'], $sco_arrForm['cou_code_num'], $sco_arrForm['order_state'], 
-																			$sco_arrForm['order_city'], $sco_arrForm['order_zip'], $sco_arrForm['order_address'], 
-																			$sco_arrForm['store_no'], $sco_arrForm['store_rono'], $sco_arrForm['store_name'], 
-																			$sco_arrForm['store_tel'], $sco_arrForm['store_address'], $sco_arrForm['delivery_status'], 
-																			$sco_arrForm['payment_web_uid'], $sco_arrForm['payment_type'], $sco_arrForm['payment_case_no'], 
+			$sco_arrForm['delivery_uid'] = $OrderDelivery->i_order_delivery($sco_arrForm['order_uid'], $_arrDM['logistics_web_uid'], $_arrDM['delivery_type'],
+																			$sco_arrForm['delivery_case_no'], $sco_arrForm['order_addressee'], $sco_arrForm['order_tel'],
+																			$sco_arrForm['order_telcellphone'], $sco_arrForm['cou_code_num'], $sco_arrForm['order_state'],
+																			$sco_arrForm['order_city'], $sco_arrForm['order_zip'], $sco_arrForm['order_address'],
+																			$sco_arrForm['store_no'], $sco_arrForm['store_rono'], $sco_arrForm['store_name'],
+																			$sco_arrForm['store_tel'], $sco_arrForm['store_address'], $sco_arrForm['delivery_status'],
+																			$sco_arrForm['payment_web_uid'], $sco_arrForm['payment_type'], $sco_arrForm['payment_case_no'],
 																			$sco_arrForm['invoice_get_type'], $sco_arrForm['invoice_donation'], $_arrDM['delivery_carriage'],
 																			$sco_arrForm['delivery_business_no'], $sco_arrForm['payment_business_no'], $_delivery_tempvar);
 			//新增訂單明細檔
@@ -706,8 +721,8 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 					$_arrTempvar['order_offset_bonus'] = ($_arrSCart['scar_offset_bonus']) ? $_arrSCart['scar_offset_bonus'] : 0; //抵扣紅利
 					$_order_df_tempvar = ( $_arrTempvar ) ? json_encode($_arrTempvar) : "";
 					/*** 其他備用參數 END ***/
-					
-					$OrderDf->i_order_df($sco_arrForm['order_uid'], $sco_arrForm['delivery_uid'], $_arrSCart['prod_uid'], 
+
+					$OrderDf->i_order_df($sco_arrForm['order_uid'], $sco_arrForm['delivery_uid'], $_arrSCart['prod_uid'],
 											$_arrSCart['prod_selling_price'], $_arrSCart['prod_cost_price'], $_arrSCart['scar_price'],
 											$_arrSCart['scar_offset_bonus'], $_arrSCart['scar_count'], $_arrSCart['scar_group_no'],
 											$_arrSCart['scar_type'], $_arrSCart['pdsc_uid'], $_arrSCart['pmkt_uid'],
@@ -719,10 +734,10 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 				}
 			}
 		}
-		
+
 		/*** 萊爾富 WebService, 確認[完成結帳] ***
 		if( $m_arrSystem['jsonHilifeService'] && ( $sco_arrForm['delivery_type'] == "500" || $sco_arrForm['delivery_type'] == "501" ) ){
-			$HilifeWebService = new HilifeWebService($web_lang); 
+			$HilifeWebService = new HilifeWebService($web_lang);
 			$_hilifePayConfirm = $HilifeWebService->payConfirm($sco_arrForm['delivery_uid']);
 			if( !$_hilifePayConfirm ){
 				//萊爾富訂單取消
@@ -737,11 +752,11 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 				<script language="javascript">
 					document.frm_alert.btn_submit.click();
 				</script>
-				<?php 				exit();	
+				<?php 				exit();
 			}
 		}
 		*** 萊爾富 WebService, 確認[完成結帳] END ***/
-		
+
 		/*** 自動請款 ***/
 		if( ( $sco_arrForm['ssl_payment_form'] == "twNewebmPP" && $m_arrSystem['jsonNewebSSLmPP']['DepositFlag'] == 1 ) ||  //藍新 mPP 5
 			( $sco_arrForm['ssl_payment_form'] == "twHiTRUST" && $m_arrSystem['jsonHiTRUST']['DepositFlag'] == 1  ) ||
@@ -755,21 +770,21 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			}
 		}
 		/*** 自動請款 END ***/
-		
+
 		/*** 藍新 NPC 請款 ***/
 		if( $sco_arrForm['ssl_payment_form'] == "twNeweb" && $m_arrSystem['jsonNewebSSL']['DepositFlag'] == 1 ){ //藍新 NPC
 			$SSLPayment = new SSLPaymentNeweb($sco_arrForm['payment_type']); //藍新線上刷卡
 			$_arrSSLPay['OrderNumber'] = $sco_arrForm['payment_case_no'];
 			$_arrSSLPay['Amount'] = $sco_arrForm['scarPriceTotal'] + $sco_arrForm['ssl_fees_charge'];
 			$_arrSSLPay['MerchantNumber'] = $sco_arrForm['payment_business_no'];
-			
+
 			//arr_dump($_arrSSLReturn); exit();
-			
+
 			$_arrSSLReturn = $SSLPayment->deposit($_arrSSLPay['OrderNumber'], $_arrSSLPay['Amount'], $_arrSSLPay['MerchantNumber']);
-			
-                      
-			
-                        
+
+
+
+
 			if( $_arrSSLReturn['execState'] ){
 				//依 訂單編號 完成線上付款
 				$OrderMf->u_order_mfSSLPayByOuid($sco_arrForm['order_uid'], $_arrSSLPay['Amount']);
@@ -782,14 +797,14 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			$_arrSSLPay['OrderNumber'] = $sco_arrForm['payment_case_no'];
 			$_arrSSLPay['Amount'] = $sco_arrForm['scarPriceTotal'] + $sco_arrForm['ssl_fees_charge'];
 			$_arrSSLPay['MerchantNumber'] = $sco_arrForm['payment_business_no'];
-			
+
 			//arr_dump($_arrSSLReturn); exit();
-			
+
 			$_arrSSLReturn = $SSLPayment->deposit($_arrSSLPay['OrderNumber'], $_arrSSLPay['Amount'], $_arrSSLPay['MerchantNumber']);
-			
-                      
-			
-                        
+
+
+
+
 			if( $_arrSSLReturn['execState'] ){
 				//依 訂單編號 完成線上付款
 				$OrderMf->u_order_mfSSLPayByOuid($sco_arrForm['order_uid'], $_arrSSLPay['Amount']);
@@ -798,20 +813,20 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 		/*** 藍新 NPC 分期請款 END ***/
 
 		if( $sco_arrForm['order_use_bonus'] > 0 ) {
-			
+
 			// 把扣抵金額還原成紅利點數
 			$_used_bonus = $Bonus->restoreMoney2Bonus($sys_arrMember['mem_uid'], $sco_arrForm['order_use_bonus']);
 			//依網站編號, 會員編號, 使用紅利積點
 			$Bonus->useBonusByWuidMuid( $m_arrSystem['mem_web_uid'], $sys_arrMember['mem_uid'], $_used_bonus,
 										"", $sco_arrForm['order_uid'], "Use OrderNo︰".$sco_arrForm['order_uid'] );
 		}
-		
+
 		//會員收件人備忘錄
-		$MemberAddressee = new MemberAddressee(); 
+		$MemberAddressee = new MemberAddressee();
 		$MemberAddressee->i_member_addressee($sys_arrMember['mem_uid'], $sco_arrForm['order_addressee'], $sco_arrForm['order_tel'],
 												$sco_arrForm['order_telcellphone'], $sco_arrForm['order_state'], $sco_arrForm['order_city'],
 												$sco_arrForm['order_zip'], $sco_arrForm['order_address']);
-		
+
 		//依購物車編號 修改訂單編號
 		$ShoppingCart->u_sCartOrderNoByScno($_arrSCO['scar_no'], $sco_arrForm['order_uid']);
 		unset ($_SESSION[$sys_arrWebsite['scar_no_cookie_name']]); //清除購物車
@@ -823,69 +838,69 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 		} else {
 			unset($_SESSION['forceCheckout']);
 		}
-		
-		
+
+
 		//20170105滿1500 Alex 實體卡號綁定送贈品
 		$order_alex = $sco_arrForm['order_uid'];
-		
+
 		$query = "SELECT if(now() between '2017-06-05 00:00:00' and '2017-06-07 00:00:00' ,1,0);";
 		$result = mysql_query($query,$con);
 		$mem_date = mysql_fetch_array($result);
-		
+
 		if($mem_date[0] ==1){
 			$query = "select prod_store_name from product where prod_no_old = 1925 && web_uid = 2;";
 			$result = mysql_query($query,$con);
 			$gifts = mysql_fetch_array($result);
-			
-		$query = "select a.pay_money_ssl from order_mf a join member b  
+
+		$query = "select a.pay_money_ssl from order_mf a join member b
 		where a.mem_uid = b.mem_uid &&  a.web_uid in (2,4,1599,1603)  && b.hypercard_status > 0 && a.order_uid = $order_alex;";
 			$result = mysql_query($query,$con);
-			$pay = mysql_fetch_array($result);	
-			
+			$pay = mysql_fetch_array($result);
+
 			if($pay[0]>=1500){
-				
+
 				if($gifts[0]>0){
-				
+
 						$query = "update order_mf set order_service_remarks = $gifts[0] where order_uid = $order_alex ;";
 						$result = mysql_query($query,$con);
 						$gifts[0] = $gifts[0] -1;
 						$query = "UPDATE product SET prod_store_name= $gifts[0] WHERE prod_uid = 604703;";
 						$result = mysql_query($query,$con);
-		
+
 				}else{
 					$query = "select prod_store_name from product where prod_no_old = 1925 && web_uid = 2;";
 					$result = mysql_query($query,$con);
 					$gifts2 = mysql_fetch_array($result);
-					
+
 					if($gifts2[0]>0){
 						$query = "update order_mf set order_service_remarks = $gifts2[0] where order_uid = $order_alex ;";
 						$result = mysql_query($query,$con);
 						$gifts2[0] = $gifts2[0] -1;
 						$query = "UPDATE product SET prod_store_name= $gifts2[0] WHERE prod_uid = 604703;";
 						$result = mysql_query($query,$con);
-						
+
 					}else{
-						
+
 						count;
-						
-						
+
+
 					}
-					
-					
-					
+
+
+
 				}
 			}else{
-				
+
 				$query = "select prod_store_name from product where prod_no_old = 1925 && web_uid = 2;";
 					$result = mysql_query($query,$con);
 					$gifts2 = mysql_fetch_array($result);
-				
+
 				if($gifts2[0]>0){
-				
-				$query = "select a.pay_money_ssl from order_mf a join member b  
+
+				$query = "select a.pay_money_ssl from order_mf a join member b
 		where a.mem_uid = b.mem_uid &&  a.web_uid in (2,4,1599,1603)  && b.hypercard_status > 0 && a.order_uid = $order_alex;";
 			$result = mysql_query($query,$con);
-			$pay2 = mysql_fetch_array($result);	
+			$pay2 = mysql_fetch_array($result);
 					if($pay2[0]>=1500){
 						$query = "update order_mf set order_service_remarks = $gifts2[0] where order_uid = $order_alex ;";
 						$result = mysql_query($query,$con);
@@ -895,33 +910,33 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 					}else{
 						$query = "update order_mf set order_service_remarks = '-1' where order_uid = $order_alex ;";
 						$result = mysql_query($query,$con);
-						
+
 					}
 				}else{
 					count;
-				}	
-					
-			}	
+				}
+
+			}
 		}else{
 			count;
 		}
-		
-		
-		
-		
-		
+
+
+
+
+
 		/*
 		////////20170114 Alex 同類總數3贈品
-			
+
 		$order_alex = $sco_arrForm['order_uid'];
-		
+
 		if($order_alex !=0){
-			
+
 			$query = "select prod_stock from product where prod_no_old = 1644 && web_uid = 2;";
 			$result = mysql_query($query,$con);
 			$gifts = mysql_fetch_array($result);
-			
-			
+
+
 			$query = "select ifnull(sum(b.order_df_qty),0)  order_df_qty from order_mf a join order_df b
 		where a.order_uid = b.order_uid && a.order_uid = $order_alex && b.prod_uid in (
         153898,
@@ -935,53 +950,53 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 		) ;";
 			$result = mysql_query($query,$con);
 			$order_df_qty = mysql_fetch_array($result);
-			
-			
-			
-			
-			
+
+
+
+
+
 			if($order_df_qty[0]>=3){
-				
+
 				if($gifts[0]>0){
-						
-						
+
+
 						$query = "update order_mf set order_service_remarks = $gifts[0] where order_uid = $order_alex ;";
 						$result = mysql_query($query,$con);
-						
+
 
 						$gifts[0] = $gifts[0] -1;
-						
+
 						$query = "update product set prod_stock= $gifts[0] where prod_uid = 196551;";
 						$result = mysql_query($query,$con);
-						
-						
-						
-		
+
+
+
+
 				}else{
 					count;
-					
+
 				}
 			}else{
-				
+
 				if($gifts[0]>0){
-				
-						
+
+
 						$query = "update order_mf set order_service_remarks = '-1' where order_uid = $order_alex ;";
 						$result = mysql_query($query,$con);
 
-					
+
 				}else{
 					count;
-				}	
-					
-			}	
-		
+				}
+
+			}
+
 		}
 		/////////
 		*/
-		
-		
-		
+
+
+
 		// @todo 改用比較不安全的方法，再看看未來有沒有其他方法解決；
 		//header("Status: 302 Found");
 		//header("Location: " . $_SERVER['REQUEST_URI'] . "&sco_order_uid=" . $sco_arrForm['order_uid']);
@@ -1001,4 +1016,3 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 	}
 /*** 寫入訂單 END ************************************************************/
 }
-

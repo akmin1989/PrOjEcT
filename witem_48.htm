@@ -1,9 +1,9 @@
 <script src="//rec.ezprice.com.tw/ext/rtmart/"></script>
 <script type="text/javascript">
-function doPrint() { 
+function doPrint() {
 	var printPage = window.open("","printPage","");
 	printPage.document.body.innerHTML = document.getElementById('block').innerHTML;
-	printPage.print(); 
+	printPage.print();
 }
 </script>
 <style type="text/css">
@@ -13,9 +13,9 @@ function doPrint() {
 	.top_title01{ font:15px/37px Arial, Helvetica, sans-serif; color:#df0070; font-weight:bold; text-align:center; background-color:#ffe7f3;}
 	.box_style02 td{ line-height:100px; padding-left:20px;}
 	.border_style01{ border-bottom: 1px dotted #CCCCCC;}
-	
+
 	/*------------*/
-	
+
 	.top_title02{ font:15px/45px Arial, Helvetica, sans-serif; color:#df0070; font-weight:bold; text-align:center; background-color:#ffe7f3; border-top:#d8d8d8 solid 1px; border-bottom:#d8d8d8 solid 1px;}
 	.box_style03{ line-height:35px; padding-left:50px;}
 	.box_style04{ font-size:15px;}
@@ -130,7 +130,7 @@ function doPrint() {
 						<td>{{$sco_arrOrderMf.payment_deadline}}</td>
 					</tr>
 				</table>
-                <table class="table_v1">                   
+                <table class="table_v1">
 					<tr align="center">
 						<td>
                             {{if $sco_arrPayForm.target != "_blank"}}
@@ -158,7 +158,7 @@ function doPrint() {
 					</tr>
 				</table>
 			</div>
-			{{/if}}            
+			{{/if}}
 			<div class="infoTable">
 				<div class="head">{{$lang.root.shopping_checkout[80]}}<!--購物明細--></div>
 				<table class="table_v2">
@@ -174,11 +174,11 @@ function doPrint() {
 					</thead>
 					<tbody>
 					{{section name=sco_i loop=$sco_arrOrderMf.order_df_delivery}}
-                    
+
 					{{assign var="_arrOrderDf" value=$sco_arrOrderMf.order_df_delivery[sco_i]}}
-                    
+
 					{{math equation="x * y" x=$_arrOrderDf.order_df_price y=$_arrOrderDf.order_df_qty assign="sub_total1"}}
-                    
+
                     {{if $_arrOrderDf.wmkt_type}}
 					{{elseif $_arrOrderDf.order_df_type == "0"}}
 						<tr>
@@ -203,7 +203,7 @@ function doPrint() {
 							<td>-</td>
 						</tr>
 					{{elseif $_arrOrderDf.order_df_type == "2"}}
-                    
+
 						<tr>
 							<td>{{$_arrOrderDf.order_uid}}</td>
 							<td class="aliLeft">({{$lang.root.shopping_cart[4]}}<!--加購-->){{$_arrOrderDf.prod_name}}</td>
@@ -231,9 +231,16 @@ function doPrint() {
 						</tr>
 					{{/if}}
 					{{/section}}
+					{{if $ActInfo.is_act == 1}}
+						<tr colspan='6'>
+							<td>
+								※ ※ ※ 滿 額 折 抵 活 動 ※ ※ ※
+							</td>
+						</tr>
+					{{/if}}
 					</tbody>
 				</table>
-				
+
 				<!--全館滿額活動-->
 				{{if $MarketingProd}}
 				<p style="height: 15px;"></p>
@@ -254,7 +261,7 @@ function doPrint() {
 				</table>
 				{{/if}}
 				<!--全館滿額活動 END-->
-				
+
 				<div class="summary">
 					<div class="totalAmount">
 						<table>
@@ -289,7 +296,7 @@ function doPrint() {
                     <div class="clear"></div>
 				</div>
 			</div>
-			
+
 			<div class="infoTable">
 				<div class="head">{{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}{{$lang.root.shopping_cart[17]}}{{else}}{{$lang.root.shopping_cart[16]}}{{/if}}</div>
 				<table class="table_v1">
@@ -334,7 +341,7 @@ function doPrint() {
 						<td>{{$lang.root.shopping_checkout[68]}}</td>
 						<td>{{$sco_arrOrderMf.invoice_addressee|nameMask}}</td>
 					</tr>
-                    {{/if}}                    
+                    {{/if}}
                     {{if $sco_arrOrderMf.invoice_address != ''}}
 					<tr>
 						<td>{{$lang.root.shopping_checkout[69]}}</td>
@@ -342,23 +349,23 @@ function doPrint() {
 					</tr>
                     {{/if}}
 					{{if ($ActTime.Now >= $ActTime.Start) && ($ActTime.End >= $ActTime.Now) }}
-					
+
 					<tr>
-						
+
 						<td>活動贈品資格</td>
 						<td>{{if $sco_arrOrderMf.order_service_remarks>0}}恭喜您獲得活動贈品
 						{{elseif $sco_arrOrderMf.order_service_remarks == '-1'}}未符合活動資格
 						{{else}}本次活動贈品已送完，請密切注意最新活動公告
 						{{/if}}
 						</td>
-						
+
 					</tr>
-					
+
 					{{/if}}
-					
+
 				</table>
 			</div>
-			
+
 			<div class="infoTable">
 				<div class="head">{{if $sco_arrOrderMf.Delivery.0.delivery_type == 101}}{{$lang.root.shopping_checkout[54]}}{{else}}{{$lang.root.shopping_checkout[2]}}{{/if}}</div>
 				<table class="table_v1">
@@ -376,7 +383,7 @@ function doPrint() {
 						<td>
 						{{$lang.root.shopping_checkout[20]}}︰<span class="form_gloss">{{$sys_arrWebsite.web_store_name}}</span><br>
 						{{$lang.root.shopping_checkout.PICKUP_ADDRESS}}︰<span class="form_gloss">{{$sys_arrWebsite.web_store_add}}</span><br>
-						{{$lang.root.shopping_checkout.PICKUP_TELEPHONE}}︰<span class="form_gloss">{{$sys_arrWebsite.web_store_tel}}</span><br>                        
+						{{$lang.root.shopping_checkout.PICKUP_TELEPHONE}}︰<span class="form_gloss">{{$sys_arrWebsite.web_store_tel}}</span><br>
                         </td>
 					</tr>
                     {{else}}
@@ -432,10 +439,10 @@ function doPrint() {
                         八日後不指定時段
                         {{/if}}
                         </td>
-					</tr>                    
+					</tr>
 				</table>
 			</div>
-			
+
 			<div class="btnArea clearFix">
 				<div class="btn_print fR"><A HREF="javascript:window.print()"></a></div>
 			</div>
@@ -443,9 +450,3 @@ function doPrint() {
 	</div>
 
 <!-- 訂購完成-atm  -->
-
-
-
-
-
-

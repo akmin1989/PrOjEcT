@@ -283,10 +283,12 @@ function doPrint() {
 							</tr>
 							{{/if}}
 							{{/section}}
+							{{if $ActInfo.is_act != 1}}
 							<tr class="total">
 								<td>{{$lang.root.shopping_cart[18]}}</td>
 								<td>NT$ <span class="formatNumber">{{$sco_arrOrderMf.total_money_all}}</span></td>
 							</tr>
+							{{/if}}
 							<!--	201705 滿額折抵 START	-->
 							{{if $sco_ActivityCheck.is_act == 1}}
 							<tr class="total">

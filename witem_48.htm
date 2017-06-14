@@ -235,10 +235,12 @@ function doPrint() {
 				</table>
 
 				{{if $ActInfo.is_act == 1}}
+				<p style="height: 15px;"></p>
 				<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="box_style04">
+					<tr><td colspan="2" class="top_title02">額 外 活 動</td></tr>
 					<tr>
-						<td align='center'>※ ※ ※ 滿 額 折 抵 活 動 ※ ※ ※ 折抵$ {{$ActInfo.discount}}</td>
-						<td align='center'>實 付 金 額 NT${{math equation="x - y" x=$sco_arrOrderMf.total_money_all y=$ActInfo.discount}}</td>
+						<td align='center' class="top_title03 box_style03 border_style02">※ ※ ※ 滿 額 折 抵 活 動 折抵${{$ActInfo.discount}} ※ ※ ※</td>
+						<td align='center' class="top_title03 box_style03 border_style02">消費總金額 NT${{math equation="x - y" x=$sco_arrOrderMf.total_money_all y=$ActInfo.discount}}</td>
 					</tr>
 				</table>
 				{{/if}}

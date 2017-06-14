@@ -20,21 +20,6 @@ $WebsiteMarketing = new WebsiteMarketing($web_lang);
 $_arrSCO['scar_no'] = $_SESSION[$sys_arrWebsite['scar_no_cookie_name']];
 //依搜尋條件 取得購物車內容
 $_arrSCO['m_arrShoppingCart'] = $ShoppingCart->s_shopping_cartBySearch($_arrSCO['scar_no'], "", "", "", "", 1);
-
-/**
-* *******************************************
-*       2017滿額折抵活動
-* *******************************************
-**/
-$ShoppingCart = new ShoppingCart ( $web_lang ); // 購物車
-$ActInfo = $ShoppingCart->ScarNoActTotalTest($order_uid1[$i],2);
-$root_smarty->assign('ActInfo',$ActInfo);
-/**
-* *******************************************
-*       2017滿額折抵活動
-* *******************************************
-**/
-
 /**
 *		Alex Time
 */
@@ -145,6 +130,19 @@ if( !$_arrSCO['m_arrShoppingCart'] || $_POST['sco_order_uid'] ){
 			$mail_name = 'order.confirm.xml';
 		}
 		/*20140506 end*/
+
+		/**
+		* *******************************************
+		*       2017滿額折抵活動
+		* *******************************************
+		**/
+		$ActInfo = $ShoppingCart->ScarNoActTotalTest($_POST['sco_order_uid'],2);
+		$root_smarty->assign('ActInfo',$ActInfo);
+		/**
+		* *******************************************
+		*       2017滿額折抵活動
+		* *******************************************
+		**/
 
 		/*** 發送訂單確認信函 ***/
 		$Mailer2 = new Mailer2();
